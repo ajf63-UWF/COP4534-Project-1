@@ -2,7 +2,9 @@
 #include <fstream>
 #include <sstream>
 #include <cctype>
+#include <vector>
 #include "PasswordUtils.hpp"
+#include "HashTable.hpp"
 
 bool isAllLetters(const std::string& s) {
     if (s.empty()) return false;
@@ -15,6 +17,7 @@ bool isAllLetters(const std::string& s) {
 }
 
 int main() {
+    // Part 1 Code
     std::ifstream in("names.txt");
     std::ofstream raw("rawdata.txt");
     std::ofstream enc("encrypteddata.txt");
@@ -41,6 +44,27 @@ int main() {
         raw << firstCol << " " << password << "\n";
         enc << firstCol << " " << encryptedPassword << "\n";
     }
+
+    raw.close();
+    enc.close();
+    in.close();
+
+    // Part 2 Code
+    HashTable hashTable(101);
+
+    std::ifstream encFile("encrypteddata.txt");
+    if (!encFile) {
+        std::cerr << "Could not open encrypteddata.txt\n";
+        return 1;
+    }
+
+    std::string userid, encPassword;
+    while (encFile >> userid >> encPassword) {
+        if (!isAllLetters(userid)) continue;
+        hashTable.insert(userid, encPassword);
+    }
+
+
 
     std::cout << "Done.\n";
     return 0;

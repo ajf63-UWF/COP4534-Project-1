@@ -22,8 +22,8 @@ std::string vigenereEncrypt(const std::string& plaintext, const std::string& key
 
     for (char ch : plaintext) {
         if (std::isalpha(static_cast<unsigned char>(ch))) {
-            char p = std::tolower(ch);
-            char k = std::tolower(key[keyIndex % key.size()]);
+            char p = static_cast<char>(std::tolower(static_cast<unsigned char>(ch)));
+            char k = static_cast<char>(std::tolower(static_cast<unsigned char>(key[keyIndex % key.size()])));
 
             int c = ((p - 'a') + (k - 'a')) % 26;
             result += static_cast<char>(c + 'a');
