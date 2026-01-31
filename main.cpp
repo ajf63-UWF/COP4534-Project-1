@@ -2,7 +2,6 @@
 #include <fstream>
 #include <sstream>
 #include <cctype>
-#include <vector>
 #include "PasswordUtils.hpp"
 #include "HashTable.hpp"
 

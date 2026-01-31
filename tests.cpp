@@ -60,6 +60,31 @@ static HashTable buildTableFromEncrypted(const std::string& encPath) {
     }
     return table;
 }
+    
+constexpr int W_USER = 12;
+constexpr int W_PASS = 20;
+constexpr int W_RESULT = 10;
+
+auto printHeader = [&](const std::string& passLabel) {
+    std::cout << std::left
+              << std::setw(W_USER) << "Userid"
+              << std::setw(W_PASS) << passLabel
+              << std::setw(W_PASS) << "Password(table/un)"
+              << std::setw(W_RESULT) << "Result"
+              << "\n";
+};
+
+auto printRow = [&](const std::string& userid, 
+                    const std::string& plainPw,
+                    const std::string& storedEnc, 
+                    bool match) {
+    std::cout << std::left
+              << std::setw(W_USER) << userid
+              << std::setw(W_PASS) << plainPw
+              << std::setw(W_PASS) << storedEnc
+              << std::setw(W_RESULT) << (match ? "match" : "no match")
+              << "\n";
+};
 
 int main() {
     const std::string key = "jones";
@@ -74,29 +99,26 @@ int main() {
 
     int failures = 0;
 
+
     // Legal tests
-    std::cout << "Legal:\n";
-    std::cout << "Userid Password(file) Password(table/un) Result\n";
+    std::cout << "Legal:\n\n";
+    printHeader("Password(file)");
 
     for (const auto& [userid, plainPw] : tests) {
         std::string storedEnc;
         bool found = table.find(userid, storedEnc);
 
         std::string computedEnc = vigenereEncrypt(plainPw, key);
-
         bool match = found && (computedEnc == storedEnc);
 
-        std::cout << userid << " "
-                  << plainPw << " "
-                  << storedEnc << " "
-                  << (match ? "match" : "NO MATCH") << "\n";
+        printRow(userid, plainPw, storedEnc, match);
 
         if (!match) failures++;
     }
 
     // Illegal tests
-    std::cout << "\nIllegal:\n";
-    std::cout << "Userid Password(mod) Password(table/un) Result\n";
+    std::cout << "\nIllegal:\n\n";
+    printHeader("Password(illegal)");
 
     for (const auto& [userid, plainPw] : tests) {
         std::string storedEnc;
@@ -108,10 +130,7 @@ int main() {
         bool match = found && (computedEnc == storedEnc);
         bool noMatch = found && !match;
 
-        std::cout << userid << " "
-                  << illegalPw << " "
-                  << storedEnc << " "
-                  << (noMatch ? "no match" : "MATCH (unexpected)") << "\n";
+        printRow(userid, illegalPw, storedEnc, noMatch ? "no match" : "match");
 
         if (!noMatch) failures++;
     }

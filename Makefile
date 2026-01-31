@@ -21,13 +21,16 @@ PasswordUtils.o: PasswordUtils.cpp PasswordUtils.hpp
 HashTable.o: HashTable.cpp HashTable.hpp
 	$(CXX) $(CXXFLAGS) -c HashTable.cpp
 
-${TEST_TARGET}: ${TEST_OBJS}
+$(TEST_TARGET): $(TEST_OBJS)
 	$(CXX) $(CXXFLAGS) -o $(TEST_TARGET) $(TEST_OBJS)
 
 tests.o: tests.cpp PasswordUtils.hpp HashTable.hpp
 	$(CXX) $(CXXFLAGS) -c tests.cpp
 
-test: $(TEST_TARGET)
+data: $(TARGET)
+	./$(TARGET)
+
+test: data $(TEST_TARGET)
 	./$(TEST_TARGET)
 
 clean:
