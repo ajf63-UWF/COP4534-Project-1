@@ -62,10 +62,10 @@ static HashTable buildTableFromEncrypted(const std::string& encPath) {
 }
     
 constexpr int W_USER = 12;
-constexpr int W_PASS = 20;
+constexpr int W_PASS = 22;
 constexpr int W_RESULT = 10;
 
-auto printHeader = [&](const std::string& passLabel) {
+auto printHeader = [](const std::string& passLabel) {
     std::cout << std::left
               << std::setw(W_USER) << "Userid"
               << std::setw(W_PASS) << passLabel
@@ -74,15 +74,15 @@ auto printHeader = [&](const std::string& passLabel) {
               << "\n";
 };
 
-auto printRow = [&](const std::string& userid, 
+auto printRow = [](const std::string& userid, 
                     const std::string& plainPw,
                     const std::string& storedEnc, 
-                    bool match) {
+                    const std::string& resultText) {
     std::cout << std::left
               << std::setw(W_USER) << userid
               << std::setw(W_PASS) << plainPw
               << std::setw(W_PASS) << storedEnc
-              << std::setw(W_RESULT) << (match ? "match" : "no match")
+              << std::setw(W_RESULT) << resultText
               << "\n";
 };
 
@@ -111,7 +111,7 @@ int main() {
         std::string computedEnc = vigenereEncrypt(plainPw, key);
         bool match = found && (computedEnc == storedEnc);
 
-        printRow(userid, plainPw, storedEnc, match);
+        printRow(userid, plainPw, storedEnc, match ? "match" : "no match");
 
         if (!match) failures++;
     }
@@ -127,8 +127,7 @@ int main() {
         std::string illegalPw = makeIllegalPassword(plainPw);
         std::string computedEnc = vigenereEncrypt(illegalPw, key);
 
-        bool match = found && (computedEnc == storedEnc);
-        bool noMatch = found && !match;
+        bool noMatch = found && (computedEnc != storedEnc);
 
         printRow(userid, illegalPw, storedEnc, noMatch ? "no match" : "match");
 
