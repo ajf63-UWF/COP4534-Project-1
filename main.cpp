@@ -1,6 +1,18 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <cctype>
 #include "PasswordUtils.hpp"
+
+bool isAllLetters(const std::string& s) {
+    if (s.empty()) return false;
+    for (unsigned char ch : s) {
+        if (!std::isalpha(ch)) {
+            return false;
+        }
+    }
+    return true;
+}
 
 int main() {
     std::ifstream in("names.txt");
@@ -13,14 +25,21 @@ int main() {
     }
 
     const std::string key = "jones";
-    std::string name;
+    std::string line;
 
-    while (in >> name) {
+    while (std::getline(in, line)) {
+        std::istringstream iss(line);
+
+        std::string firstCol;
+        if (!(iss >> firstCol)) continue; // Skip empty lines
+
+        if (!isAllLetters(firstCol)) continue;
+
         std::string password = generatePassword();
         std::string encryptedPassword = vigenereEncrypt(password, key);
 
-        raw << name << " " << password << "\n";
-        enc << name << " " << encryptedPassword << "\n";
+        raw << firstCol << " " << password << "\n";
+        enc << firstCol << " " << encryptedPassword << "\n";
     }
 
     std::cout << "Done.\n";
